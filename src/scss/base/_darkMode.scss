@@ -13,7 +13,8 @@
     color: $gris;
   }
 
-  .anuncio {
+  .anuncio,
+  .resumen-propiedad {
     background-color: $grisOscuro;
     border: 1px solid $grisOscuro;
     .precio {
@@ -23,4 +24,26 @@
       filter: invert(100%);
       }
   }
+  .texto-nosotros blockquote{
+    color: $blanco;
+  }
+
+  .formulario{
+    label,
+    legend,
+    p{
+      color: $gris;
+    }
+
+    input:not([type="submit"]),
+    textarea,
+    select{
+      background-color: $grisOscuro;
+      border: 1px solid $grisOscuro;
+      color: $blanco;
+    }
+
+
+  }
+
 }

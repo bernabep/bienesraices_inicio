@@ -40,13 +40,15 @@
 .navegacion {
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0.3s ease-in-out, opacity 0.3s linear;
+  height: 0;
+  transition: visibility 0.3s ease-in-out, opacity 0.3s linear, height 0.5s linear;
   @include tablet {
     display: flex;
     gap: 2rem;
     align-items: center;
     visibility: visible;
     opacity: 1;
+    height:auto;
   }
 
   a {
@@ -80,4 +82,5 @@
 .mostrar {
   visibility: visible;
   opacity: 1;
+  height: auto;
 }
