@@ -11,11 +11,15 @@
 }
 
 .navegacion {
-    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility .3s ease-in-out, opacity 0.3s linear;
   @include tablet {
     display: flex;
     gap: 2rem;
     align-items: center;
+    visibility: visible;
+    opacity: 1;
   }
 
   a {
@@ -47,5 +51,6 @@
 }
 
 .mostrar{
-  display: block;
+visibility: visible;
+opacity: 1;
 }
