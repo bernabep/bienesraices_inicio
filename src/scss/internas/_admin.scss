@@ -12,4 +12,20 @@
     &.exito{
         background-color: $verde;
     }
+
+}
+table.propiedades{
+        margin-top: 4rem;
+        width: 100%;
+
+        thead{
+            background-color: $verde;
+            
+            th{
+                color: $blanco;
+            }
+        }
+    .imagen-tabla{
+        width: 10rem;
+    }
 }
