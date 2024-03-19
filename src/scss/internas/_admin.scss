@@ -17,6 +17,7 @@
 table.propiedades{
         margin-top: 4rem;
         width: 100%;
+        align-items: center;
 
         thead{
             background-color: $verde;
@@ -24,6 +25,9 @@ table.propiedades{
             th{
                 color: $blanco;
             }
+        }
+        tbody{
+            justify-content: center;
         }
     .imagen-tabla{
         width: 10rem;
