@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
         $errores[] = "El precio es obligatorio";
     }
 
-    if (strlen($descripcion) < 50) {
+    if (strlen($descripcion) < 5) {
         $errores[] = "La descripción es obligatoria y debe tener al menos 50 caracteres";
     }
 
@@ -99,10 +99,10 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
         }
 
         //Generar un nombre único a la imagen
-        $nombreImagen = md5(uniqid(rand(),true )) . ".jpg";
+        $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
 
         //Subir imagen
-        move_uploaded_file($imagen['tmp_name'],$carpetaImagenes . $nombreImagen);
+        move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
 
 
         //Insertar en la base de datos
@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
 
             // echo "Insertado Correctamente";
             //Se redirecciona al usuario en lugar de pasar un mensaje Ok
-            header("Location: /admin");
+            header("Location: /admin?resultado=1");
         }
     }
 }
