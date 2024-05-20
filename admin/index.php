@@ -1,5 +1,11 @@
 <?php
 
+require '../includes/funciones.php';
+$auth = estaAutenticado();
+
+if(!$auth){
+  header('Location: /');
+}
 
 
 //Incluir la conexión
@@ -48,7 +54,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 }
 
 
-require '../includes/funciones.php';
+
 // echo '<pre>';
 // var_dump($mensaje);
 // echo '</pre>';

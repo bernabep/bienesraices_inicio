@@ -1,43 +1,22 @@
 <?php
   require 'includes/funciones.php';
-  require 'includes/config/database.php';
-
-  $db = conectarDB();
-
-  $id = $_GET['id'];
-  $id = filter_var($id, FILTER_VALIDATE_INT);
-
-  if (!$id){
-    header('Location: index.php');
-  }
-    
-
-  
-
-  $query = "SELECT * FROM propiedades WHERE id = {$id}";
-
-  $resultado = mysqli_query($db, $query);
-  
-  if($resultado->num_rows === 0){
-    header('Location: index.php');
-  }
-
-  $propiedad = mysqli_fetch_assoc($resultado);
 
   incluirTemplate('header');
   ?>
     <main class="contenedor seccion contenido-centrado">
-      <h1><?php echo $propiedad['titulo'];?><h1>
+      <h1>Casa en Venta frente al bosque</h1>
       <picture>
+        <source srcset="build/img/destacada.webp" type="image/webp" />
+        <source srcset="build/img/destacada.jpg" type="image/jpeg" />
         <img
           class="icono"
           loading="lazy"
-          src="imagenes/<?php echo $propiedad['imagen']; ?>"
+          src="build/img/destacada.jpg"
           alt="imagen destacada"
         />
       </picture>
       <div class="resumen-propiedad">
-        <p class="precio">$<?php echo $propiedad['precio']; ?></p>
+        <p class="precio">$3,000,000</p>
         <ul class="iconos-caracteristicas">
           <li>
             <img
@@ -46,7 +25,7 @@
               src="build/img/icono_wc.svg"
               alt="icono wc"
             />
-            <p><?php echo $propiedad['wc']; ?></p>
+            <p>3</p>
           </li>
           <li>
             <img
@@ -55,7 +34,7 @@
               src="build/img/icono_estacionamiento.svg"
               alt="icono estacionamiento"
             />
-            <p><?php echo $propiedad['estacionamiento']; ?></p>
+            <p>3</p>
           </li>
           <li>
             <img
@@ -64,20 +43,26 @@
               src="build/img/icono_dormitorio.svg"
               alt="icono dormitorio"
             />
-            <p><?php echo $propiedad['habitaciones']; ?></p>
+            <p>4</p>
           </li>
         </ul>
-  
-        <p class="descripcion-anuncio">
-          <?php echo $propiedad['descripcion']; ?>
+        <p>
+          No sólo sobrevivió 500 años, sino que tambien ingresó como texto de
+          relleno en documentos electrónicos, quedando esencialmente igual al
+          original. Fue popularizado en los 60s con la creación de las hojas
+          "Letraset", las cuales contenian pasajes de Lorem Ipsum, y más
+          recientemente con software de autoedición, como por ejemplo Aldus
+          PageMaker, el cual incluye versiones de Lorem Ipsum.
         </p>
-  
+        <p>
+          No sólo sobrevivió 500 años, sino que tambien ingresó como texto de
+          relleno en documentos electrónicos, quedando esencialmente igual al
+          original.
+        </p>
       </div>
       <!--.resumen-propiedad-->
     </main>
 
     <?php 
-    mysqli_close($db);
 incluirTemplate('footer');
-
 ?>

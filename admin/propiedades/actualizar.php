@@ -1,4 +1,9 @@
 <?php
+require '../../includes/funciones.php';
+$auth = estaAutenticado();
+if(!$auth){
+  header('Location: /');
+}
 
 // Validar id valido
 $id = $_GET['id'];
@@ -16,9 +21,9 @@ $consulta = "SELECT * FROM propiedades WHERE id = $id";
 $resultado = mysqli_query($db, $consulta);
 $propiedad = mysqli_fetch_assoc($resultado);
 
-echo '<pre>';
-var_dump($propiedad);
-echo '</pre>';
+// echo '<pre>';
+// var_dump($propiedad);
+// echo '</pre>';
 
 //Consultar vendedores
 $consulta = "SELECT * FROM vendedores";
@@ -158,7 +163,7 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
   }
 }
 
-require '../../includes/funciones.php';
+
 incluirTemplate('header');
 ?>
 <main class="contenedor seccion">
