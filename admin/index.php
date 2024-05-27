@@ -1,15 +1,11 @@
 <?php
 
-require '../includes/funciones.php';
-$auth = estaAutenticado();
+require '../includes/app.php';
+estaAutenticado();
 
-if(!$auth){
-  header('Location: /');
-}
 
 
 //Incluir la conexión
-require '../includes/config/database.php';
 $bd = conectarDB();
 
 //Escribir el Query

@@ -1,9 +1,6 @@
 <?php
-require '../../includes/funciones.php';
-$auth = estaAutenticado();
-if(!$auth){
-  header('Location: /');
-}
+require '../../includes/app.php';
+estaAutenticado();
 
 // Validar id valido
 $id = $_GET['id'];
@@ -13,7 +10,6 @@ if (!$id) {
   header('Location: /admin');
 }
 //Base de datos
-require '../../includes/config/database.php';
 $db = conectarDB();
 
 //Consultar propiedad

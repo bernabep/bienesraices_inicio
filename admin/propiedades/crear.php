@@ -1,11 +1,14 @@
 <?php
 //Base de datos
-require '../../includes/config/database.php';
-require '../../includes/funciones.php';
-$auth = estaAutenticado();
-if(!$auth){
-  header('Location: /');
-}
+require '../../includes/app.php';
+
+use App\Propiedad;
+use Intervention\Image\ImageManagerStatic as Image;
+
+
+
+estaAutenticado();
+
 $db = conectarDB();
 
 //Consultar vendedores
@@ -13,7 +16,8 @@ $query = "SELECT * FROM vendedores";
 $resultado = mysqli_query($db, $query);
 
 //Arreglo con mensajes de errores
-$errores = [];
+$errores = Propiedad::getErrores();
+
 
 $titulo = '';
 $precio = '';
@@ -26,95 +30,46 @@ $vendedorId = '';
 //Ejecutar el código después de que el usuario envia el formulario
 if ($_SERVER["REQUEST_METHOD"] == 'POST') {
 
-    // echo '<pre>';
-    // var_dump($_POST);
-    // echo '</pre>';
+    //Crea una nueva instancia
+    $propiedad = new Propiedad($_POST);
 
-    // echo '<pre>';
-    // var_dump($_FILES);
-    // echo '</pre>';
-    // exit;
+    //**Subida de archivos*//
+    //Generar un nombre único a la imagen
+    $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+
+    //Setear la imagen
+    //Realiza un resize a la imagen con intervention
+    if ($_FILES['imagen']['tmp_name']) {
+        $image = Image::make($_FILES['imagen']['tmp_name'])->fit(800, 600);
+        $propiedad->setImagen($nombreImagen);
+    }
+
+
+    //Validar
+    $errores = $propiedad->validar();
+
 
     //Asignar files hacia una variable
     $imagen = $_FILES['imagen'];
 
 
-    $titulo = mysqli_real_escape_string($db, $_POST['titulo']);
-    $precio = mysqli_real_escape_string($db, $_POST['precio']);
-    $descripcion = mysqli_real_escape_string($db, $_POST['descripcion']);
-    $habitaciones = mysqli_real_escape_string($db, $_POST['habitaciones']);
-    $wc = mysqli_real_escape_string($db, $_POST['wc']);
-    $estacionamiento = mysqli_real_escape_string($db, $_POST['estacionamiento']);
-    $vendedorId = mysqli_real_escape_string($db, $_POST['vendedorId']);
-    $creado = date('Y/m/d');
-
-    if (!$titulo) {
-        $errores[] = "Debes añadir un titulo";
-    }
-
-    if (!$precio) {
-        $errores[] = "El precio es obligatorio";
-    }
-
-    if (strlen($descripcion) < 5) {
-        $errores[] = "La descripción es obligatoria y debe tener al menos 50 caracteres";
-    }
-
-    if (!$habitaciones) {
-        $errores[] = "El Número de habitaciones es obligatorio";
-    }
-
-    if (!$wc) {
-        $errores[] = "El Número de baños es obligatorio";
-    }
-
-    if (!$estacionamiento) {
-        $errores[] = "El Número de Estacionamiento es obligatorio";
-    }
-
-    if (!$vendedorId) {
-        $errores[] = "Elige un vendedor";
-    }
-
-    if (!$imagen['name']) {
-        $errores[] = "Debes insertar una imagen";
-    }
-
-    //Validad por tamaño de imagen (100 kb máximo)
-    $medida = 1000 * 1000;
-    if ($imagen['size'] > $medida) {
-        $errores[] = 'La imagen es muy pesada';
-    }
-
-
-
-    // echo '<pre>';
-    // var_dump($errores);
-    // echo '</pre>';
-
     //Revisar que el array de errores este vacio
 
     if (empty($errores)) {
-        //Subida de archivos
-        //Crear carpeta//
-        $carpetaImagenes = '../../imagenes/';
 
-        if (!is_dir($carpetaImagenes)) {
-            mkdir($carpetaImagenes);
+        
+        //Crear la carpeta si no existe
+        if(!is_dir(CARPETA_IMAGENES)){
+            mkdir(CARPETA_IMAGENES);
         }
+        
+        //Guarda la imagen en el servidor
+        $image->save(CARPETA_IMAGENES . $nombreImagen);
+        
+        //Guardar en la base de datos
+        $resultado = $propiedad->guardar();
 
-        //Generar un nombre único a la imagen
-        $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
-
-        //Subir imagen
-        move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
-
-
-        //Insertar en la base de datos
-
-        $query = "INSERT INTO propiedades (titulo,precio,imagen,descripcion,habitaciones,wc,estacionamiento,creado,vendedorId) VALUE('$titulo','$precio','$nombreImagen','$descripcion','$habitaciones','$wc','$estacionamiento','$creado','$vendedorId')";
         // echo $query;
-        $resultado = mysqli_query($db, $query);
         if ($resultado) {
 
             // echo "Insertado Correctamente";
