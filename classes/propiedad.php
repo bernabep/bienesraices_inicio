@@ -9,7 +9,7 @@ class Propiedad
     protected static $columnasDB = ['id', 'titulo', 'precio', 'imagen', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedorId'];
 
     //Errores
-    protected static $errores=[];
+    protected static $errores = [];
 
 
     public $id;
@@ -27,6 +27,8 @@ class Propiedad
     {
         self::$db = $database;
     }
+
+
 
     public function __construct($args = [])
     {
@@ -48,15 +50,14 @@ class Propiedad
         $atributos = $this->sanitizarAtributos();
 
         $query = "INSERT INTO propiedades (";
-        $query .= join(", ",array_keys($atributos));
+        $query .= join(", ", array_keys($atributos));
         $query .= ") VALUE('";
-        $query .= join("', '",array_values($atributos));
+        $query .= join("', '", array_values($atributos));
         $query .= "')";
 
         //Insertar en la base de datos
         $resultado = self::$db->query($query);
         return $resultado;
-        
     }
 
     public function atributos()
@@ -80,9 +81,10 @@ class Propiedad
     }
 
     //Subida de archivos
-    public function setImagen($imagen){
+    public function setImagen($imagen)
+    {
         //Asignar al atributo de imagen el nombre de la imagen
-        if($imagen){
+        if ($imagen) {
             $this->imagen = $imagen;
         }
     }
@@ -90,43 +92,82 @@ class Propiedad
 
 
     //Validación
-    public static function getErrores(){
+    public static function getErrores()
+    {
         return self::$errores;
     }
 
-    public function validar(){
+    public function validar()
+    {
         if (!$this->titulo) {
             self::$errores[] = "Debes añadir un titulo";
         }
-    
+
         if (!$this->precio) {
             self::$errores[] = "El precio es obligatorio";
         }
-    
+
         if (strlen($this->descripcion) < 5) {
             self::$errores[] = "La descripción es obligatoria y debe tener al menos 50 caracteres";
         }
-    
+
         if (!$this->habitaciones) {
             self::$errores[] = "El Número de habitaciones es obligatorio";
         }
-    
+
         if (!$this->wc) {
             self::$errores[] = "El Número de baños es obligatorio";
         }
-    
+
         if (!$this->estacionamiento) {
             self::$errores[] = "El Número de Estacionamiento es obligatorio";
         }
-    
+
         if (!$this->vendedorId) {
             self::$errores[] = "Elige un vendedor";
         }
-    
+
         if (!$this->imagen) {
             self::$errores[] = "La imagern es Obligatoria";
         }
-    
+
         return self::$errores;
+    }
+
+    public static function all()
+    {
+        $query = "SELECT * FROM propiedades";
+        $resultado = self::consultarSQL($query);
+        return $resultado;
+    }
+
+    public static function consultarSQL($query)
+    {
+        //Consultar la base de datos
+        $resultado = self::$db->query($query);
+        
+        //Iterar los resultado
+        $array = [];
+        while ($registro = $resultado->fetch_assoc()) {
+            $array[] = self::crearObjeto($registro);
+        }
+        
+        //Liberar la memoria
+        $resultado->free();
+        
+        //retornar los resultados
+        return $array;
+        
+    }
+
+    public static function crearObjeto($registro){
+        $objeto = new self;
+
+        foreach ($registro as $key => $value) {
+            if (property_exists($objeto, $key)) {
+                $objeto->$key = $value;
+            }
+        }
+        return $objeto;
     }
 };
