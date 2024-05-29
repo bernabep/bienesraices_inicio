@@ -11,7 +11,7 @@ $propiedades = Propiedad::all();
 
 
 //Consultar la BD
-$resultadoConsulta = mysqli_query($bd, $query);
+// $resultadoConsulta = mysqli_query($bd, $query);
 // echo '<pre>';
 // var_dump(mysqli_fetch_all($resultadoConsulta));
 // echo '</pre>';
@@ -83,25 +83,24 @@ incluirTemplate('header');
       </tr>
     </thead>
     <tbody><!-- Mostrar los Resultados -->
-      <?php
-      while ($propiedades = mysqli_fetch_assoc($resultadoConsulta)) : ?>
+      <?php foreach($propiedades as $propiedad): ?>
 
         <tr>
-          <td><?php echo $propiedades['id']; ?></td>
-          <td><?php echo $propiedades['titulo'] ?></td>
-          <td><img src="/imagenes/<?php echo $propiedades['imagen'] ?>" alt="" class="imagen-tabla"></td>
-          <td>$ <?php echo $propiedades['precio'] ?></td>
+          <td><?php echo $propiedad->id; ?></td>
+          <td><?php echo $propiedad->titulo ?></td>
+          <td><img src="/imagenes/<?php echo $propiedad->imagen ?>" alt="" class="imagen-tabla"></td>
+          <td>$ <?php echo $propiedad->precio ?></td>
           <td>
             <form method="POST" class="w-100">
-              <input type="hidden" name="id" value="<?php echo $propiedades['id']?>">
+              <input type="hidden" name="id" value="<?php echo $propiedad->id?>">
               <input type="submit" class="boton-rojo-block" value="Eliminar">
 
             </form>
-            <a class="boton-amarillo-block" href="/admin/propiedades/actualizar.php?id=<?php echo $propiedades['id'] ?>">Actualizar</a>
+            <a class="boton-amarillo-block" href="/admin/propiedades/actualizar.php?id=<?php echo $propiedad->id ?>">Actualizar</a>
           </td>
         </tr>
 
-      <?php endwhile; ?>
+      <?php endforeach; ?>
     </tbody>
 
 
@@ -113,8 +112,6 @@ incluirTemplate('header');
 
 <?php
 
-//Cerrar la conexion
-mysqli_close($bd);
 
 incluirTemplate('footer');
 ?>
