@@ -1,6 +1,7 @@
 <?php
 
 use App\Propiedad;
+use Intervention\Image\ImageManagerStatic as Image;
 
 require '../../includes/app.php';
 estaAutenticado();
@@ -22,130 +23,42 @@ $consulta = "SELECT * FROM vendedores";
 $resultado = mysqli_query($db, $consulta);
 
 //Arreglo con mensajes de errores
-$errores = [];
+$errores = Propiedad::getErrores();
+
 
 
 
 //Ejecutar el código después de que el usuario envia el formulario
-if ($_SERVER["REQUEST_METHOD"] == 'POST') {
+if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
-  // echo '<pre>';
-  // var_dump($_POST);
-  // echo '</pre>';
+  //Asignar los atributos
+  $args = $_POST['propiedad'];
 
-  // echo '<pre>';
-  // var_dump($_FILES);
-  // echo '</pre>';
-  // exit;
+  $propiedad->sincronizar($args);
 
-  //Asignar files hacia una variable
-  $imagen = $_FILES['imagen'];
+  //Validación
+  $errores = $propiedad->validar();
 
+  //Generar un nombre único a la imagen
+  $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
 
-  $titulo = mysqli_real_escape_string($db, $_POST['titulo']);
-  $precio = mysqli_real_escape_string($db, $_POST['precio']);
-  $descripcion = mysqli_real_escape_string($db, $_POST['descripcion']);
-  $habitaciones = mysqli_real_escape_string($db, $_POST['habitaciones']);
-  $wc = mysqli_real_escape_string($db, $_POST['wc']);
-  $estacionamiento = mysqli_real_escape_string($db, $_POST['estacionamiento']);
-  $vendedorId = mysqli_real_escape_string($db, $_POST['vendedorId']);
-  $creado = date('Y/m/d');
+  //Subida de archivos
 
-  if (!$titulo) {
-    $errores[] = "Debes añadir un titulo";
+  if ($_FILES['propiedad']['tmp_name']['imagen']) {
+    $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
+    $propiedad->setImagen($nombreImagen);
   }
-
-  if (!$precio) {
-    $errores[] = "El precio es obligatorio";
-  }
-
-  if (strlen($descripcion) < 5) {
-    $errores[] = "La descripción es obligatoria y debe tener al menos 50 caracteres";
-  }
-
-  if (!$habitaciones) {
-    $errores[] = "El Número de habitaciones es obligatorio";
-  }
-
-  if (!$wc) {
-    $errores[] = "El Número de baños es obligatorio";
-  }
-
-  if (!$estacionamiento) {
-    $errores[] = "El Número de Estacionamiento es obligatorio";
-  }
-
-  if (!$vendedorId) {
-    $errores[] = "Elige un vendedor";
-  }
-
-  //Validad por tamaño de imagen (100 kb máximo)
-  $medida = 1000 * 1000;
-  if ($imagen['size'] > $medida) {
-    $errores[] = 'La imagen es muy pesada';
-  }
-
-
-
-  // echo '<pre>';
-  // var_dump($errores);
-  // echo '</pre>';
 
   //Revisar que el array de errores este vacio
-
   if (empty($errores)) {
-    //Subida de archivos
-    //Crear carpeta//
-    $carpetaImagenes = '../../imagenes/';
-
-    if (!is_dir($carpetaImagenes)) {
-      mkdir($carpetaImagenes);
-    }
-
-    if ($imagen['name']) {
-      //Eliminar la imagen previa
-      unlink($carpetaImagenes . $imagenPropiedad);
-
-      //Generar un nombre único a la imagen
-      $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
-      //Subir imagen
-      move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
-    } else{
-      $nombreImagen = $imagenPropiedad;
-    }
-
-
-
-
-
-
-    //Insertar en la base de datos
-
-    $query = "UPDATE propiedades 
-        SET 
-        titulo = '$titulo', 
-        precio = '$precio', 
-        imagen = '$nombreImagen', 
-        descripcion = '$descripcion', 
-        habitaciones = $habitaciones, 
-        wc = $wc, 
-        estacionamiento = $estacionamiento,
-        creado = '$creado', 
-        vendedorId = $vendedorId
-        WHERE
-        id = $id";
+    //Almacenar la imagen
+    $image->save(CARPETA_IMAGENES . $nombreImagen);
 
     // echo $query;
-    $resultado = mysqli_query($db, $query);
-    if ($resultado) {
+    $propiedad->guardar();
 
-      // echo "Insertado Correctamente";
-      //Se redirecciona al usuario en lugar de pasar un mensaje Ok
-      header("Location: /admin?resultado=2");
-    }
   }
 }
-
 
 incluirTemplate('header');
 ?>
@@ -154,14 +67,16 @@ incluirTemplate('header');
 
   <a href="/admin" class="boton boton-verde">Volver</a>
 
+
   <?php foreach ($errores as $error) :  ?>
+    <?php debuguear($error)?>
     <div class="alerta error">
       <?php echo $error ?>
     </div>
   <?php endforeach; ?>
 
   <form class="formulario" method="POST" enctype="multipart/form-data">
-    <?php include '../../includes/templates/formulario_propiedades.php'?>
+    <?php include '../../includes/templates/formulario_propiedades.php' ?>
     <input type="submit" value="Actualizar Propiedad" class="boton boton-verde">
   </form>
 </main>

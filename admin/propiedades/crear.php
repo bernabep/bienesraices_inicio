@@ -26,7 +26,7 @@ $errores = Propiedad::getErrores();
 if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
     //Crea una nueva instancia
-    $propiedad = new Propiedad($_POST);
+    $propiedad = new Propiedad($_POST['propiedad']);
 
 
     //**Subida de archivos*//
@@ -35,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
     //Setear la imagen
     //Realiza un resize a la imagen con intervention
-    if ($_FILES['imagen']['tmp_name']) {
-        $image = Image::make($_FILES['imagen']['tmp_name'])->fit(800, 600);
+    if ($_FILES['propiedad']['tmp_name']['imagen']) {
+        $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
         $propiedad->setImagen($nombreImagen);
     }
 
@@ -45,8 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $errores = $propiedad->validar();
 
 
-    //Asignar files hacia una variable
-    $imagen = $_FILES['imagen'];
+    // //Asignar files hacia una variable
+    // $imagen = $_FILES['imagen'];
 
 
     //Revisar que el array de errores este vacio
