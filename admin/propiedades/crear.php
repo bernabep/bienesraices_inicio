@@ -29,14 +29,15 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $propiedad = new Propiedad($_POST['propiedad']);
 
 
+
     //**Subida de archivos*//
     //Generar un nombre único a la imagen
     $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
-
+    
     //Setear la imagen
     //Realiza un resize a la imagen con intervention
     if ($_FILES['propiedad']['tmp_name']['imagen']) {
-        $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
+        $imagen = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
         $propiedad->setImagen($nombreImagen);
     }
 
@@ -52,26 +53,19 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     //Revisar que el array de errores este vacio
 
     if (empty($errores)) {
-
-        
-        //Crear la carpeta si no existe
-        if(!is_dir(CARPETA_IMAGENES)){
-            mkdir(CARPETA_IMAGENES);
-        }
-        
-        //Guarda la imagen en el servidor
-        $image->save(CARPETA_IMAGENES . $nombreImagen);
-        
+                
+                
         //Guardar en la base de datos
+        $imagen->save(CARPETA_IMAGENES . $nombreImagen);
         $resultado = $propiedad->guardar();
 
-        // echo $query;
-        if ($resultado) {
+        // // echo $query;
+        // if ($resultado) {
 
-            // echo "Insertado Correctamente";
-            //Se redirecciona al usuario en lugar de pasar un mensaje Ok
-            header("Location: /admin?resultado=1");
-        }
+        //     // echo "Insertado Correctamente";
+        //     //Se redirecciona al usuario en lugar de pasar un mensaje Ok
+        //     header("Location: /admin?resultado=1");
+        // }
     }
 }
 

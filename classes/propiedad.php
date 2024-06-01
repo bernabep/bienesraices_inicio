@@ -32,7 +32,7 @@ class Propiedad
 
     public function __construct($args = [])
     {
-        $this->id = $args['id'] ?? '';
+        $this->id = $args['id'] ?? null;
         $this->titulo = $args['titulo'] ?? '';
         $this->precio = $args['precio'] ?? '';
         $this->imagen = $args['imagen'] ?? '';
@@ -46,10 +46,13 @@ class Propiedad
 
     public function guardar()
     {
-        if (isset($this->id)) {
+        
+        if (!is_null($this->id)) {
             //Actualizando
+            
             $this->actualizar();
         } else {
+            
             $this->crear();
         }
     }
@@ -68,7 +71,22 @@ class Propiedad
 
         //Insertar en la base de datos
         $resultado = self::$db->query($query);
-        return $resultado;
+        if ($resultado) {
+
+            //Se redirecciona al usuario en lugar de pasar un mensaje Ok
+            header("Location: /admin?resultado=2");
+          }
+    }
+
+    public function eliminar(){
+        
+        $query = "DELETE FROM propiedades WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
+        $resultado = self::$db->query($query);
+        if ($resultado) {
+            $this->borrarImagen();
+            //Se redirecciona al usuario en lugar de pasar un mensaje Ok
+            header("Location: /admin?resultado=3");
+          }
     }
 
     public function actualizar()
@@ -120,23 +138,26 @@ class Propiedad
     //Subida de archivos
     public function setImagen($imagen)
     {
-
+        
         if (isset($this->id)) {
-            //Comprobar si existe el archivo
-            $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
-            if ($existeArchivo) {
-
-                unlink(CARPETA_IMAGENES . $this->imagen);
-            }
+            $this->borrarImagen();
         }
-
-
         //Asignar al atributo de imagen el nombre de la imagen
+        
         if ($imagen) {
             $this->imagen = $imagen;
         }
     }
 
+
+
+    public function borrarImagen(){
+            //Comprobar si existe el archivo
+            $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+            if ($existeArchivo) {
+                unlink(CARPETA_IMAGENES . $this->imagen);
+            }
+        }
 
 
     //Validación
@@ -186,6 +207,7 @@ class Propiedad
     {
         $query = "SELECT * FROM propiedades";
         $resultado = self::consultarSQL($query);
+        
         return $resultado;
     }
 

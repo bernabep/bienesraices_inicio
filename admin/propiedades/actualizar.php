@@ -69,7 +69,7 @@ incluirTemplate('header');
 
 
   <?php foreach ($errores as $error) :  ?>
-    <?php debuguear($error)?>
+    
     <div class="alerta error">
       <?php echo $error ?>
     </div>

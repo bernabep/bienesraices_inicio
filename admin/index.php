@@ -9,7 +9,6 @@ use App\Propiedad;
 $propiedades = Propiedad::all();
 
 
-
 //Consultar la BD
 // $resultadoConsulta = mysqli_query($bd, $query);
 // echo '<pre>';
@@ -23,21 +22,13 @@ $resultado = $_GET['resultado'] ?? null;
 
 if($_SERVER['REQUEST_METHOD']==='POST'){
   $id = $_POST['id'];
+  
   $id = filter_var($id,FILTER_VALIDATE_INT);
 
 
   if($id){
-
-    //Elimino el archivo
-    $query = "SELECT imagen FROM propiedades WHERE id = $id";
-    $resultado = mysqli_query($bd,$query);
-    $propiedad = mysqli_fetch_assoc($resultado);
-    unlink('../imagenes/'.$propiedad['imagen']);
-
-    //Elimino la propiedad
-    $query = "DELETE FROM propiedades WHERE id = $id";
-    $resultado = mysqli_query($bd,$query);
-
+    $propiedad = Propiedad::find($id);
+    $resultado = $propiedad->eliminar();
 
     if($resultado){
       header('location: /admin?resultado=3');
