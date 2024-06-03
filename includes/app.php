@@ -6,9 +6,9 @@ require __DIR__ . '/../vendor/autoload.php';
 
 
 
-use App\Propiedad;
+use App\ActiveRecord;
 $db = conectarDB();
-Propiedad::getDB($db);
+ActiveRecord::getDB($db);
 // $propiedas = new Propiedad;
 
 // var_dump($propiedas);

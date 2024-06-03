@@ -1,20 +1,19 @@
 <?php
-//Base de datos
 require '../../includes/app.php';
 
 use App\Propiedad;
+use App\Vendedor;
 use Intervention\Image\ImageManagerStatic as Image;
 
 
 
 estaAutenticado();
 
-$db = conectarDB();
 $propiedad = new Propiedad;
 
 //Consultar vendedores
-$query = "SELECT * FROM vendedores";
-$resultado = mysqli_query($db, $query);
+$vendedores = Vendedor::all();
+
 
 //Arreglo con mensajes de errores
 $errores = Propiedad::getErrores();
